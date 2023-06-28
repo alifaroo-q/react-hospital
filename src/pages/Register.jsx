@@ -7,34 +7,37 @@ import {
   FormLabel,
   Select,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-const INITIAL_REGISTER = {
+import { AuthContext } from "../context/AuthContext.jsx";
+
+const INITIAL_REGISTER = Object.freeze({
   username: "",
   email: "",
-  password: "",
-  confirmPassword: "",
+  password1: "",
+  password2: "",
   role: "",
   department: "",
-};
+});
 
 const Register = () => {
   const navigate = useNavigate();
 
   const [registerData, setRegisterData] = useState(INITIAL_REGISTER);
+  const { registerUser } = useContext(AuthContext);
 
   const registerDataChangeHandler = (event) => {
     const { name, value } = event.target;
     setRegisterData({
       ...registerData,
-      [name]: value,
+      [name]: value.trim(),
     });
   };
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    console.log(registerData);
+    registerUser(registerData);
   };
 
   return (
@@ -87,10 +90,10 @@ const Register = () => {
                 <FormLabel>Password</FormLabel>
                 <Input
                   onChange={registerDataChangeHandler}
-                  name="password"
+                  name="password1"
                   type="password"
                   placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;"
-                  value={registerData.password}
+                  value={registerData.password1}
                 />
               </FormControl>
 
@@ -98,10 +101,10 @@ const Register = () => {
                 <FormLabel>Confirm Password</FormLabel>
                 <Input
                   onChange={registerDataChangeHandler}
-                  name="confirmPassword"
+                  name="password2"
                   type="password"
                   placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;"
-                  value={registerData.confirmPassword}
+                  value={registerData.password2}
                 />
               </FormControl>
 

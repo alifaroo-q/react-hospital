@@ -1,18 +1,19 @@
-import Home from "./pages/Home";
+import { Routes, Route } from "react-router-dom";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import PrivateRoutes from "./utils/PrivateRoutes";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route index path="/" exact element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route element={<PrivateRoutes />}>
+        <Route path="/" exact element={<Dashboard />} />
+      </Route>
+      <Route index path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
   );
 }
 
