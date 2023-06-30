@@ -7,6 +7,7 @@ import axios from "axios";
 export const AuthContext = createContext({
   loginUser: () => {},
   registerUser: () => {},
+  logoutUser: () => {},
   userAuthData: {},
 });
 
@@ -40,11 +41,32 @@ export const AuthProvider = ({ children }) => {
       .catch((err) => console.log(err));
   };
 
+  const userRole = (userData) => {
+    const { user, access } = userData;
+
+    axios
+      .post(
+        `/api/${user.role.toLowerCase()}/`,
+        { id: user.pk },
+        {
+          headers: {
+            Authorization: `Bearer ${access}`,
+          },
+        }
+      )
+      .then((res) => console.log(res))
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const registerUser = (userData) => {
     axios
       .post("/dj-rest-auth/registration/", userData)
       .then((res) => {
         if (res.status === 201) {
+          userRole(res.data);
+
           toast({
             title: "Registration success",
             description: "You account created successfully",
@@ -59,7 +81,20 @@ export const AuthProvider = ({ children }) => {
       .catch((err) => console.log(err));
   };
 
-  const value = { userAuthData, loginUser, registerUser };
+  const logoutUser = () => {
+    axios
+      .post("/dj-rest-auth/logout/")
+      .then(() => {
+        localStorage.removeItem("userAuthData");
+        setUserAuthData({});
+        navigate("/login");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const value = { userAuthData, loginUser, registerUser, logoutUser };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

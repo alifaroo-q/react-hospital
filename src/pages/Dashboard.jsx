@@ -1,30 +1,50 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext.jsx";
+import { Heading } from "@chakra-ui/react";
+
+import Header from "../components/Header.jsx";
+import Doctor from "../components/Doctor.jsx";
+import Nurse from "../components/Nurse.jsx";
+import Receptionist from "../components/Receptionist.jsx";
+import { AppointmentProvider } from "../context/AppointmentContext.jsx";
+import { PatientProvider } from "../context/PatientContext.jsx";
+import { DoctorProvider } from "../context/DoctorContext.jsx";
+import { NurseProvider } from "../context/NurseContext.jsx";
 
 const Dashboard = () => {
-  const [patients, setPatients] = useState([]);
+  const { userAuthData } = useContext(AuthContext);
 
-  const userAuth = JSON.parse(localStorage.getItem("userAuthData"));
-  axios.defaults.headers["Authorization"] = `Bearer ${userAuth.access}`;
+  let mainView;
 
-  useEffect(() => {
-    const getAllPatients = () => {
-      axios.get("/api/patients/").then((res) => {
-        setPatients(res.data);
-      });
-    };
-
-    getAllPatients();
-  }, []);
+  // decides which view to show
+  switch (userAuthData.user.role.toLowerCase()) {
+    case "doctor":
+      mainView = <Doctor />;
+      break;
+    case "nurse":
+      mainView = <Nurse />;
+      break;
+    case "receptionist":
+      mainView = <Receptionist />;
+      break;
+    default:
+      mainView = <Heading>Something went wrong</Heading>;
+      break;
+  }
 
   return (
-    <div>
-      <h1>Welcome to dashboard</h1>
-      <br />
-      {patients.map((patient) => {
-        return <div key={patient.id}>{patient.name}</div>;
-      })}
-    </div>
+    <>
+      <AppointmentProvider>
+        <PatientProvider>
+          <DoctorProvider>
+            <NurseProvider>
+              <Header />
+              {mainView}
+            </NurseProvider>
+          </DoctorProvider>
+        </PatientProvider>
+      </AppointmentProvider>
+    </>
   );
 };
 
