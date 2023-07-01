@@ -38,7 +38,16 @@ export const AuthProvider = ({ children }) => {
           navigate("/");
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        toast({
+          title: "Login failed",
+          description: "Wrong credentials",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        console.log(err);
+      });
   };
 
   const userRole = (userData) => {
