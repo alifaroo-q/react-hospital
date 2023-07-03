@@ -6,6 +6,7 @@ import {
   FormControl,
   FormLabel,
   Select,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +27,8 @@ const Register = () => {
 
   const [registerData, setRegisterData] = useState(INITIAL_REGISTER);
   const { registerUser } = useContext(AuthContext);
+
+  const [isSmaller] = useMediaQuery("(max-width: 750px)");
 
   const registerDataChangeHandler = (event) => {
     const { name, value } = event.target;
@@ -55,12 +58,14 @@ const Register = () => {
       >
         <Flex
           direction={"column"}
-          w={"xl"}
+          w={isSmaller ? "72" : "xl"}
           bg={"white"}
           shadow={"lg"}
           p={"6"}
           justifyContent={"space-between"}
           className="rounded-lg"
+          overflow={"scroll"}
+          overflowX={"clip"}
         >
           <form onSubmit={handleFormSubmit}>
             <Flex direction={"column"} gap={"1rem"}>
@@ -154,9 +159,14 @@ const Register = () => {
               </FormControl>
             </Flex>
 
-            <Flex justifyContent={"center"} gap={"1rem"} mt={"2rem"}>
+            <Flex
+              flexDirection={isSmaller ? "column" : "row"}
+              justifyContent={"center"}
+              gap={"1rem"}
+              mt={"2rem"}
+            >
               <Button
-                minWidth={"xs"}
+                minWidth={isSmaller ? "" : "xs"}
                 shadow={"base"}
                 colorScheme="teal"
                 type="submit"

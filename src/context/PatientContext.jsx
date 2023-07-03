@@ -42,8 +42,13 @@ export const PatientProvider = ({ children }) => {
     );
     const newPatients = [updatedPatientData, ...filterOutPatients];
 
+    const url =
+      userAuth.user.role === "Doctor"
+        ? `/api/doctor/patients/${updatedPatientData.id}/`
+        : `/api/patient/${updatedPatientData.id}/`;
+
     axios
-      .put(`/api/patient/${updatedPatientData.id}/`, updatedPatientData)
+      .put(url, updatedPatientData)
       .then(() => {
         setPatients(newPatients);
         toast({
@@ -82,9 +87,18 @@ export const PatientProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    axios.get("/api/patients/").then((res) => {
-      setPatients(res.data);
-    });
+    const url =
+      userAuth.user.role === "Doctor"
+        ? "/api/doctor/patients/"
+        : "/api/patients/";
+    axios
+      .get(url)
+      .then((res) => {
+        setPatients(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   const value = { patients, addNewPatient, updatePatient, deletePatient };

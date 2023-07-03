@@ -23,6 +23,9 @@ import {
   Stack,
   Input,
   Textarea,
+  Heading,
+  Flex,
+  Avatar,
 } from "@chakra-ui/react";
 import { useContext, useState } from "react";
 import { PatientContext } from "../context/PatientContext.jsx";
@@ -30,6 +33,7 @@ import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { DoctorContext } from "../context/DoctorContext.jsx";
 import { NurseContext } from "../context/NurseContext.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const INITIAL_PATIENT = Object.freeze({
   height: "",
@@ -48,6 +52,8 @@ const ShowPatients = () => {
 
   const [modalValues, setModalValues] = useState(INITIAL_PATIENT);
   const [patientUpdated, setPatientUpdated] = useState(false);
+
+  const navigate = useNavigate();
 
   const patientEditHandler = (patient) => {
     setModalValues(patient);
@@ -90,49 +96,65 @@ const ShowPatients = () => {
 
   return (
     <>
-      <Box mb={"8"}>
-        <TableContainer>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Name</Th>
-                <Th>Birthday</Th>
-                <Th>Gender</Th>
-                <Th>Doctor</Th>
-                <Th>Nurse</Th>
-                <Th>Edit</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {patients.map((patient) => {
-                const patientNurse = nurses.filter(
-                  (nurse) => nurse.nurse_id === patient.nurse
-                );
-                const patientDoctor = doctors.filter(
-                  (doctor) => doctor.doctor_id === patient.doctor
-                );
+      {patients.length ? (
+        <Box mb={"8"}>
+          <TableContainer>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Name</Th>
+                  <Th>Birthday</Th>
+                  <Th>Gender</Th>
+                  <Th>Doctor</Th>
+                  <Th>Nurse</Th>
+                  <Th>Edit</Th>
+                  {userAuthData.user.role === "Doctor" && <Th>Profile</Th>}
+                </Tr>
+              </Thead>
+              <Tbody>
+                {patients.map((patient) => {
+                  const patientNurse = nurses.filter(
+                    (nurse) => nurse.nurse_id === patient.nurse
+                  );
+                  const patientDoctor = doctors.filter(
+                    (doctor) => doctor.doctor_id === patient.doctor
+                  );
 
-                return (
-                  <Tr key={patient.id}>
-                    <Td>{patient.name}</Td>
-                    <Td>{patient.DOB}</Td>
-                    <Td>{patient.gender}</Td>
-                    <Td>{patientDoctor[0]?.doctor_name}</Td>
-                    <Td>{patientNurse[0]?.nurse_name}</Td>
-                    <Td>
-                      <IconButton
-                        onClick={() => patientEditHandler(patient)}
-                        aria-label={"update patient"}
-                        icon={<EditIcon />}
-                      />
-                    </Td>
-                  </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      </Box>
+                  return (
+                    <Tr key={patient.id}>
+                      <Td>{patient.name}</Td>
+                      <Td>{patient.DOB}</Td>
+                      <Td>{patient.gender}</Td>
+                      <Td>{patientDoctor[0]?.doctor_name}</Td>
+                      <Td>{patientNurse[0]?.nurse_name}</Td>
+                      <Td>
+                        <IconButton
+                          onClick={() => patientEditHandler(patient)}
+                          aria-label={"update patient"}
+                          icon={<EditIcon />}
+                        />
+                      </Td>
+                      {userAuthData.user.role === "Doctor" && (
+                        <Td>
+                          <Avatar
+                            size={"sm"}
+                            onClick={() => navigate(`/patient/${patient.id}`)}
+                            cursor={"pointer"}
+                          />
+                        </Td>
+                      )}
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </Box>
+      ) : (
+        <Flex justifyContent={"center"} mt={"10rem"}>
+          <Heading color={"blackAlpha.700"}>No relevant patients</Heading>
+        </Flex>
+      )}
 
       <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -192,6 +214,7 @@ const ShowPatients = () => {
                 <FormControl>
                   <FormLabel>Nurse Notes</FormLabel>
                   <Textarea
+                    readOnly={userAuthData.user.role === "Doctor"}
                     name="nurse_notes"
                     value={modalValues.nurse_notes}
                     onChange={handlePatientDataChange}

@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }) => {
             title: "Login success",
             description: "You are logged in successfully",
             status: "success",
+            position: "top",
             duration: 3000,
             isClosable: true,
           });
@@ -39,11 +40,17 @@ export const AuthProvider = ({ children }) => {
         }
       })
       .catch((err) => {
+        const desc =
+          err.code === "ERR_BAD_REQUEST"
+            ? "Wrong credentials"
+            : "Something went wrong with the server";
+
         toast({
           title: "Login failed",
-          description: "Wrong credentials",
+          description: desc,
+          position: "top",
           status: "error",
-          duration: 3000,
+          duration: 10000,
           isClosable: true,
         });
         console.log(err);
@@ -80,6 +87,7 @@ export const AuthProvider = ({ children }) => {
             title: "Registration success",
             description: "You account created successfully",
             status: "success",
+            position: "top",
             duration: 3000,
             isClosable: true,
           });
@@ -91,16 +99,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logoutUser = () => {
-    axios
-      .post("/dj-rest-auth/logout/")
-      .then(() => {
-        localStorage.removeItem("userAuthData");
-        setUserAuthData({});
-        navigate("/login");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    axios.post("/dj-rest-auth/logout/").catch((err) => {
+      console.log(err);
+    });
+    localStorage.removeItem("userAuthData");
+    setUserAuthData({});
+    navigate("/login");
   };
 
   const value = { userAuthData, loginUser, registerUser, logoutUser };

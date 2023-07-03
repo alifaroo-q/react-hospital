@@ -5,6 +5,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  useMediaQuery,
 } from "@chakra-ui/react";
 
 import { useState, useContext } from "react";
@@ -13,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const INITIAL_LOGIN = Object.freeze({
-  username: "",
   email: "",
   password: "",
 });
@@ -22,6 +22,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const { loginUser } = useContext(AuthContext);
+  const [isSmaller] = useMediaQuery("(max-width: 750px)");
 
   const [loginData, setLoginData] = useState(INITIAL_LOGIN);
 
@@ -54,8 +55,8 @@ const Login = () => {
         <form onSubmit={handleFormSubmit}>
           <Flex
             direction={"column"}
-            w={"96"}
-            h={"96"}
+            w={isSmaller ? "72" : "96"}
+            h={"sm"}
             bg={"white"}
             shadow={"lg"}
             p={"6"}
@@ -63,17 +64,6 @@ const Login = () => {
             className="rounded-lg"
           >
             <Flex direction={"column"} gap={"1rem"}>
-              <FormControl isRequired>
-                <FormLabel>Username</FormLabel>
-                <Input
-                  value={loginData.username}
-                  name="username"
-                  type="text"
-                  placeholder="johndoe"
-                  onChange={loginDataChangeHandler}
-                />
-              </FormControl>
-
               <FormControl isRequired>
                 <FormLabel>Email</FormLabel>
                 <Input
@@ -96,7 +86,7 @@ const Login = () => {
                 />
               </FormControl>
             </Flex>
-            <Flex gap={"1rem"}>
+            <Flex pb={"5"} flexDirection={"column"} gap={"1rem"}>
               <Button
                 minWidth={"3xs"}
                 boxShadow={"lg"}

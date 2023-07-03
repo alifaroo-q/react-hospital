@@ -10,9 +10,12 @@ import {
 } from "@chakra-ui/react";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { logoutUser, userAuthData } = useContext(AuthContext);
+
+  const navigate = useNavigate();
 
   const logoutUserHandler = () => {
     logoutUser();
@@ -21,7 +24,13 @@ const Header = () => {
   return (
     <Box bg={"whiteAlpha.200"} p={"8"} shadow={"lg"}>
       <Flex justifyContent={"space-between"} alignItems={"center"}>
-        <Heading color={"blackAlpha.800"}>React Hospital</Heading>
+        <Heading
+          cursor={"pointer"}
+          color={"blackAlpha.800"}
+          onClick={() => navigate("/")}
+        >
+          React Hospital
+        </Heading>
         <Show above={"lg"}>
           <Box>
             <Heading size={"md"} color={"blackAlpha.500"}>
