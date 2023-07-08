@@ -95,7 +95,32 @@ export const AuthProvider = ({ children }) => {
           navigate("/login");
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        if (err?.response?.data?.non_field_errors) {
+          toast({
+            title: "Registration success",
+            description: "Your password is similar to your username",
+            status: "warning",
+            position: "top",
+            duration: 3000,
+            isClosable: true,
+          });
+
+          navigate("/login");
+        }
+
+        if (err?.response?.data?.email || err?.response?.data?.username) {
+          toast({
+            title: "Registration failed",
+            description: "User with given email/username already exist",
+            status: "error",
+            position: "top",
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+        console.log(err);
+      });
   };
 
   const logoutUser = () => {
